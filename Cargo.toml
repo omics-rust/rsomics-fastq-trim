@@ -2,11 +2,11 @@
 name = "rsomics-fastq-trim"
 version = "0.4.5"
 description = "FASTQ adapter / poly-G / poly-X / fixed-length trimming. Rust port of fastp's trim hot path with rayon-parallel SE + PE pipelines and AI-friendly --json output."
-edition.workspace = true
-rust-version.workspace = true
-license.workspace = true
-repository.workspace = true
-authors.workspace = true
+edition = "2024"
+rust-version = "1.91"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/omics-rust/rsomics-world"
+authors = ["Zane Leong <efd@live.com>"]
 readme = "README.md"
 categories = ["science", "command-line-utilities"]
 keywords = ["fastq", "bioinformatics", "fastp", "adapter-trimming", "polyg"]
@@ -16,27 +16,25 @@ name = "rsomics-fastq-trim"
 path = "src/main.rs"
 
 [dependencies]
-rsomics-common = { path = "../../../foundation/rsomics-common", version = "0.6" }
-rsomics-fqgz = { path = "../../../foundation/rsomics-fqgz", version = "0.1" }
-rsomics-seqio = { path = "../../../foundation/rsomics-seqio", version = "0.1" }
-rsomics-help = { path = "../../../foundation/rsomics-help", version = "0.3" }
-clap = { workspace = true, features = ["derive"] }
-serde = { workspace = true, features = ["derive"] }
-serde_json.workspace = true
-anyhow.workspace = true
-rayon.workspace = true
-flate2.workspace = true
+rsomics-common = { version = "0.6" }
+rsomics-fqgz = { version = "0.1" }
+rsomics-seqio = { version = "0.1" }
+rsomics-help = { version = "0.3" }
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+rayon = "1"
+flate2 = { version = "1", default-features = false, features = ["zlib-rs"] }
 libdeflater = "1"
 memchr = "2"
 
 [dev-dependencies]
-rsomics-common = { path = "../../../foundation/rsomics-common", version = "0.6", features = ["test-support", "rayon"] }
+rsomics-common = { version = "0.6", features = ["test-support", "rayon"] }
 tempfile = "3"
-criterion.workspace = true
+criterion = { version = "0.7", default-features = false, features = ["cargo_bench_support"] }
 
 [[bench]]
 name = "fastq_trim"
 harness = false
 
-[lints]
-workspace = true
