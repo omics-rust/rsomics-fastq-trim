@@ -25,6 +25,10 @@ impl AdapterConfig {
     }
 }
 
+/// Returns the leftmost position of the best-scoring adapter hit (lowest mismatch rate
+/// among all positions satisfying the mismatch threshold). fastp scans all candidate
+/// positions and picks the best, not the first — this matches its output on representative
+/// fixtures (fastp 0.20.1 reference on 4090).
 #[must_use]
 pub fn find_adapter_3p(seq: &[u8], cfg: &AdapterConfig) -> Option<usize> {
     let adapter = &cfg.sequence;
@@ -33,6 +37,9 @@ pub fn find_adapter_3p(seq: &[u8], cfg: &AdapterConfig) -> Option<usize> {
     }
 
     let max_start = seq.len().saturating_sub(cfg.min_match_len);
+    let mut best_start: Option<usize> = None;
+    let mut best_rate = f32::INFINITY;
+
     for start in 0..=max_start {
         let cmp_len = (seq.len() - start).min(adapter.len());
         if cmp_len < cfg.min_match_len {
@@ -45,11 +52,12 @@ pub fn find_adapter_3p(seq: &[u8], cfg: &AdapterConfig) -> Option<usize> {
             .count();
         #[allow(clippy::cast_precision_loss)]
         let rate = mismatches as f32 / cmp_len as f32;
-        if rate <= cfg.max_mismatch_rate {
-            return Some(start);
+        if rate <= cfg.max_mismatch_rate && rate < best_rate {
+            best_rate = rate;
+            best_start = Some(start);
         }
     }
-    None
+    best_start
 }
 
 #[cfg(test)]
