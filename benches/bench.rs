@@ -12,7 +12,12 @@ fn bench_fastq_trim(c: &mut Criterion) {
         b.iter(|| {
             let out_file = NamedTempFile::new().unwrap();
             let out = Command::new(black_box(bin))
-                .args(["-i", fq.to_str().unwrap(), "-o", out_file.path().to_str().unwrap()])
+                .args([
+                    "-i",
+                    fq.to_str().unwrap(),
+                    "-o",
+                    out_file.path().to_str().unwrap(),
+                ])
                 .output()
                 .unwrap();
             assert!(out.status.success());
