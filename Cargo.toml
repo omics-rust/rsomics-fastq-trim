@@ -15,6 +15,11 @@ keywords = ["fastq", "bioinformatics", "fastp", "adapter-trimming", "polyg"]
 name = "rsomics-fastq-trim"
 path = "src/main.rs"
 
+
+[lib]
+name = "rsomics_fastq_trim"
+path = "src/lib.rs"
+doctest = false
 [dependencies]
 rsomics-common = { version = "0.6" }
 rsomics-fqgz = { version = "0.1" }
