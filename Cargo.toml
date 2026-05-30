@@ -1,7 +1,7 @@
 [package]
 name = "rsomics-fastq-trim"
 version = "0.4.5"
-description = "FASTQ adapter / poly-G / poly-X / fixed-length trimming. Rust port of fastp's trim hot path with rayon-parallel SE + PE pipelines and AI-friendly --json output."
+description = "FASTQ adapter / poly-G / poly-X / fixed-length trimming. Rust port of fastp's trim hot path with rayon-parallel SE + PE pipelines and --json output."
 edition = "2024"
 rust-version = "1.91"
 license = "MIT OR Apache-2.0"
