@@ -703,8 +703,6 @@ pub const HELP: HelpSpec = HelpSpec {
 mod tests {
     use clap::CommandFactory;
 
-    // clap debug_assert fires only during binary parse, not lib tests — this test
-    // is the only way to catch arg-graph errors (duplicate shorts, id clashes) in CI.
     #[test]
     fn cli_definition_is_valid() {
         super::Cli::command().debug_assert();
