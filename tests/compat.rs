@@ -34,6 +34,10 @@ fn run_to_path(bin: &std::path::Path, args: &[&str]) {
     );
 }
 
+fn golden(name: &str) -> Vec<u8> {
+    std::fs::read(fixture(name)).unwrap()
+}
+
 #[test]
 fn se_adapter_trim_matches_fastp() {
     if !fastp_available() {
@@ -291,4 +295,110 @@ fn pe_overlap_detect_matches_fastp() {
     let ours2 = std::fs::read(&ours_out2).unwrap();
     let theirs2 = std::fs::read(&theirs_out2).unwrap();
     assert_eq!(ours2, theirs2, "PE R2 differs");
+}
+
+// The *.trimmed.fastq goldens were captured from fastp 0.20.1 on the committed
+// inputs; these run unconditionally so CI diffs ours against the frozen upstream
+// output even with no fastp present. The live tests above re-check against a
+// locally installed fastp when one exists.
+
+#[test]
+fn se_adapter_matches_committed_upstream() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out = tmp.path().join("ours.fq");
+    run_to_path(
+        &ours(),
+        &[
+            "-i",
+            fixture("se_adapter.fastq").to_str().unwrap(),
+            "-o",
+            out.to_str().unwrap(),
+            "-a",
+            "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA",
+            "-L",
+        ],
+    );
+    assert_eq!(
+        std::fs::read(&out).unwrap(),
+        golden("se_adapter.trimmed.fastq")
+    );
+}
+
+#[test]
+fn se_polyg_matches_committed_upstream() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out = tmp.path().join("ours.fq");
+    run_to_path(
+        &ours(),
+        &[
+            "-i",
+            fixture("se_polyg.fastq").to_str().unwrap(),
+            "-o",
+            out.to_str().unwrap(),
+            "-A",
+            "-g",
+            "-L",
+        ],
+    );
+    assert_eq!(
+        std::fs::read(&out).unwrap(),
+        golden("se_polyg.trimmed.fastq")
+    );
+}
+
+#[test]
+fn se_fixed_matches_committed_upstream() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out = tmp.path().join("ours.fq");
+    run_to_path(
+        &ours(),
+        &[
+            "-i",
+            fixture("se_adapter.fastq").to_str().unwrap(),
+            "-o",
+            out.to_str().unwrap(),
+            "-A",
+            "-f",
+            "4",
+            "--trim_tail1",
+            "2",
+            "-L",
+        ],
+    );
+    assert_eq!(
+        std::fs::read(&out).unwrap(),
+        golden("se_fixed.trimmed.fastq")
+    );
+}
+
+#[test]
+fn pe_overlap_matches_committed_upstream() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out1 = tmp.path().join("ours_r1.fq");
+    let out2 = tmp.path().join("ours_r2.fq");
+    run_to_path(
+        &ours(),
+        &[
+            "-i",
+            fixture("pe_overlap_r1.fastq").to_str().unwrap(),
+            "-I",
+            fixture("pe_overlap_r2.fastq").to_str().unwrap(),
+            "-o",
+            out1.to_str().unwrap(),
+            "-O",
+            out2.to_str().unwrap(),
+            "-2",
+            "-L",
+        ],
+    );
+    assert_eq!(
+        std::fs::read(&out1).unwrap(),
+        golden("pe_overlap_r1.trimmed.fastq"),
+        "PE R1 vs committed upstream"
+    );
+    assert_eq!(
+        std::fs::read(&out2).unwrap(),
+        golden("pe_overlap_r2.trimmed.fastq"),
+        "PE R2 vs committed upstream"
+    );
 }

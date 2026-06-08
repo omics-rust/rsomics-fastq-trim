@@ -1,0 +1,16 @@
+@r1_no_polyg
+ACGTACGTACGTACGTACGT
++
+IIIIIIIIIIIIIIIIIIII
+@r2_long_polyg_tail
+ACGTACGTAC
++
+IIIIIIIIII
+@r3_short_polyg
+ACGTACGTACGTGGGG
++
+IIIIIIIIIIIIIIII
+@r4_polyg_with_intervening
+ACGTAC
++
+IIIIII
