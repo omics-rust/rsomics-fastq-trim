@@ -386,6 +386,13 @@ impl Tool for Cli {
         Cli::execute(&self)?;
         Ok(())
     }
+
+    // Override so `--json` emits the populated TrimReport instead of a null
+    // result: the default `run` discards `execute`'s value.
+    fn run(self) -> std::process::ExitCode {
+        let common = self.common().clone();
+        rsomics_common::run(&common, Self::meta(), || Cli::execute(&self))
+    }
 }
 
 pub const HELP: HelpSpec = HelpSpec {

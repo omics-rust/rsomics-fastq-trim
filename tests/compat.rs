@@ -372,6 +372,39 @@ fn se_fixed_matches_committed_upstream() {
 }
 
 #[test]
+fn json_emits_single_populated_report() {
+    let tmp = tempfile::tempdir().unwrap();
+    let out = tmp.path().join("ours.fq");
+    let stdout = Command::new(ours())
+        .args([
+            "-i",
+            fixture("se_adapter.fastq").to_str().unwrap(),
+            "-o",
+            out.to_str().unwrap(),
+            "-a",
+            "AGATCGGAAGAGCACACGTCTGAACTCCAGTCA",
+            "-L",
+            "--json",
+        ])
+        .output()
+        .expect("subprocess spawn")
+        .stdout;
+
+    // from_slice rejects trailing data, so a double-print regression fails here.
+    let env: serde_json::Value = serde_json::from_slice(&stdout).expect("stdout is one JSON doc");
+    assert_eq!(env["status"], "ok");
+    let result = &env["result"];
+    assert!(
+        result.is_object(),
+        "result must be a populated report, got {result}"
+    );
+    assert_eq!(result["reads_in"], 4);
+    assert_eq!(result["reads_out"], 4);
+    assert_eq!(result["adapter_trimmed_reads"], 2);
+    assert_eq!(result["mode"], "SE");
+}
+
+#[test]
 fn pe_overlap_matches_committed_upstream() {
     let tmp = tempfile::tempdir().unwrap();
     let out1 = tmp.path().join("ours_r1.fq");
